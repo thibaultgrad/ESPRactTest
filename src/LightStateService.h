@@ -6,6 +6,7 @@
 #include <HttpEndpoint.h>
 #include <MqttPubSub.h>
 #include <WebSocketTxRx.h>
+#include <ESPFS.h>
 
 #define LED_PIN 2
 #define PRINT_DELAY 5000
@@ -26,6 +27,8 @@
 
 #define LIGHT_SETTINGS_ENDPOINT_PATH "/rest/lightState"
 #define LIGHT_SETTINGS_SOCKET_PATH "/ws/lightState"
+
+#define LIGHT_STATE_SETTINGS_FILE "/config/light_state_settings.json"
 
 class LightState {
  public:
@@ -84,6 +87,9 @@ class LightStateService : public StatefulService<LightState> {
   WebSocketTxRx<LightState> _webSocket;
   AsyncMqttClient* _mqttClient;
   LightMqttSettingsService* _lightMqttSettingsService;
+   FSPersistence<LightState> _fsPersistence;
+ 
+
 
   void registerConfig();
   void onConfigUpdated();

@@ -20,6 +20,7 @@ LightStateService::LightStateService(AsyncWebServer* server,
                securityManager,
                AuthenticationPredicates::IS_AUTHENTICATED),
     _mqttClient(mqttClient),
+     _fsPersistence(LightState::read, LightState::update, this, &ESPFS, LIGHT_STATE_SETTINGS_FILE),
     _lightMqttSettingsService(lightMqttSettingsService) {
   // configure led to be output
   pinMode(LED_PIN, OUTPUT);
@@ -37,6 +38,7 @@ LightStateService::LightStateService(AsyncWebServer* server,
 void LightStateService::begin() {
   _state.ledOn = DEFAULT_LED_STATE;
   _state.ledColor = 1;
+  _fsPersistence.readFromFS();
   onConfigUpdated();
 }
 

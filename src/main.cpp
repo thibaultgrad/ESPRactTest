@@ -41,10 +41,13 @@ void loop() {
     lightStateService.read([&a](LightState state){
 a = state.ledColor;
     });
-Serial.println(a);
-    lightStateService.update([](LightState state){
-  state.ledColor++;
+if(a==27){
+      lightStateService.update([](LightState &state){
+  state.ledColor=10;
+  Serial.println(state.ledColor);
   return StateUpdateResult::CHANGED;
-  },"");
+  },"Jean");
+
+}
   
 }
