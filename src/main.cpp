@@ -1,5 +1,6 @@
 #include <ESP8266React.h>
 #include <SavedDataStateService.h>
+#include <SettingsDataStateService.h>
 
 #define SERIAL_BAUD_RATE 115200
 
@@ -8,7 +9,9 @@ ESP8266React esp8266React(&server);
 
 SavedDataStateService savedDataStateService = SavedDataStateService(&server,
                                                         esp8266React.getSecurityManager());
-
+                                                        
+SettingsDataStateService settingsDataStateService = SettingsDataStateService(&server,
+                                                        esp8266React.getSecurityManager());
 	double temps_total_spray;
 	unsigned long nb_total_passage;
 	unsigned int D_Min_mm;
@@ -43,21 +46,16 @@ Etats etat = Attente;
 int nb_spray_non_enregistre;
 #define nb_spray_avt_refresh  10
 
-void ReadSettings(SavedDataStateService state)
+void ReadSavedDatas()
 {
-  state.read([](SavedDataState _state){
+  savedDataStateService.read([](SavedDataState _state){
   temps_total_spray = _state.temps_total_spray;
   nb_total_passage= _state.nb_total_passage;
-  MS_SPRAY= _state.MS_SPRAY;
-  MS_RETARD_DEMARRAGE= _state.MS_RETARD_DEMARRAGE;
-  MS_Arret= _state.MS_Arret;
-  D_Min_level_cuve= _state.D_Min_level_cuve;
-  Reset_counters=_state.Reset_counters;
   });
 }
-void ReadParameters(SavedDataStateService state)
+void ReadSettings()
 {
-  state.read([](SavedDataState _state){
+  settingsDataStateService.read([](SettingsDataState _state){
   MS_SPRAY= _state.MS_SPRAY;
   MS_RETARD_DEMARRAGE= _state.MS_RETARD_DEMARRAGE;
   MS_Arret= _state.MS_Arret;
@@ -66,16 +64,22 @@ void ReadParameters(SavedDataStateService state)
   });
 }
 
-void UpdateDatas()
+void UpdateSavedDatas()
 {
   savedDataStateService.update([](SavedDataState &state){
   state.temps_total_spray=temps_total_spray ;
   state.nb_total_passage=nb_total_passage;
-  state.MS_SPRAY=MS_SPRAY;
-  state.MS_RETARD_DEMARRAGE= MS_RETARD_DEMARRAGE;
+  return StateUpdateResult::CHANGED;
+  },"Jean");
+}
+void UpdateSettings()
+{
+  settingsDataStateService.update([](SettingsDataState &state){
+  state.MS_SPRAY = MS_SPRAY;
+  state.MS_RETARD_DEMARRAGE=MS_RETARD_DEMARRAGE;
   state.MS_Arret= MS_Arret;
   state.D_Min_level_cuve= D_Min_level_cuve;
-  state.Reset_counters= Reset_counters;
+  state.Reset_counters=Reset_counters;
   return StateUpdateResult::CHANGED;
   },"Jean");
 }
@@ -101,8 +105,7 @@ void ajout_temps_spraying()
 {
 	temps_total_spray +=(double) (duree_etat) / (1000.0 * 3600.0);
 	nb_total_passage++;
-  ReadParameters(savedDataStateService);
-  UpdateDatas(); 
+  UpdateSavedDatas(); 
 }
 
 
@@ -121,7 +124,7 @@ void setup() {
   // start the server
   server.begin();
 
-ReadSettings(savedDataStateService);
+ReadSavedDatas();
 
 	pinMode(pin_moteur_relais1, OUTPUT);
 
@@ -138,13 +141,13 @@ void loop() {
 
   if(abs(refresh_date-millis())>1000)  
   {
-    ReadParameters(savedDataStateService);
+    ReadSettings();
     if(Reset_counters==true)
     {
       nb_total_passage=0;
       temps_total_spray=0;
       Reset_counters=false;
-      UpdateDatas();
+      UpdateSavedDatas();
     }
     refresh_date=millis();
   }
@@ -181,7 +184,7 @@ void loop() {
         etat = Attente;
         ajout_temps_spraying();
         SprayOff();
-        //Affichage_ecran = D_mesure;
+
       }
 
       break;

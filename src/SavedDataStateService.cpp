@@ -19,11 +19,7 @@ SavedDataStateService::SavedDataStateService(AsyncWebServer* server,
 void SavedDataStateService::begin() {
       _state.temps_total_spray = 1;
       _state.nb_total_passage = 1;
-      _state.MS_SPRAY = 1;
-      _state.MS_RETARD_DEMARRAGE = 1;
-      _state.MS_Arret = 1;
-      _state.D_Min_level_cuve = 1;
-      _state.Reset_counters=false;
+
   _fsPersistence.readFromFS();
   onConfigUpdated();
 }
