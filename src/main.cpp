@@ -25,6 +25,7 @@ enum Etats
 {
 	Attente,
 	Spraying,
+  Attente_demarrage,
 	Erreur,
 	Niveau_produit_bas,
 };
@@ -38,7 +39,9 @@ unsigned int duree_etat;
 Etats etat = Attente;
 
 #define pin_moteur_relais1 2
-#define pin_moteur_relais2 9
+#define pin_moteur_relais2 4
+
+#define pin_detection 5
 
 int nb_spray_non_enregistre;
 #define nb_spray_avt_refresh  10
@@ -92,7 +95,6 @@ void SprayOn()
 {
 	t_debut_etat = millis();
 	etat_spray = 1;
-	delay(MS_RETARD_DEMARRAGE);
 	digitalWrite(pin_moteur_relais1, LOW);
 	//delay(2);
 	//digitalWrite(pin_moteur_relais2, LOW);
@@ -127,6 +129,8 @@ ReadSettings(savedDataStateService);
 
   digitalWrite(pin_moteur_relais1, 1);
 
+  pinMode(pin_detection,INPUT);
+
   t_debut_etat = millis();
   etat_spray = 0;
 }
@@ -150,30 +154,26 @@ void loop() {
   }
  
 
-
+  bool presence = digitalRead(pin_detection);
   duree_etat = (unsigned int) abs(millis() - t_debut_etat);
 	int val_etat = (int)etat;
 	switch (val_etat)
 	{
     case (int)Attente: {
-      //Echantillonnage(Mesure(TRIGGER_PIN_PRESENCE, ECHO_PIN_PRESENCE));
-      //Serial.println(d_moyenne);
-      if ((D_Min_level_cuve>10) && duree_etat > MS_Arret)
+      if ((presence) && (duree_etat > MS_Arret))
       {
-        //if (capteur_niveau) {
-        //	if (Mesure(TRIGGER_PIN_NIVEAU, ECHO_PIN_NIVEAU) > SavedDatas.D_Min_level_cuve) {
-        //		etat = Niveau_produit_bas;
-        //	}
-        //	else { goto Spray; }
-        ////}
-        ////else {
-        //	Serial.print(d_moyenne);
-        //Spray:
-        etat = Spraying;
+        etat = Attente_demarrage;
+        t_debut_etat=millis();
+      }
+      break;
+    }
+    case (int)Attente_demarrage :{
+      if (duree_etat>MS_RETARD_DEMARRAGE)
+      {
+        etat=Spraying;
         SprayOn();
       }
       break;
-
     }
     case (int)Spraying: {
       if (duree_etat > MS_SPRAY)
@@ -181,16 +181,14 @@ void loop() {
         etat = Attente;
         ajout_temps_spraying();
         SprayOff();
-        //Affichage_ecran = D_mesure;
       }
 
       break;
 
     }
     case (int)Erreur: {
-      //Echantillonnage(Mesure(TRIGGER_PIN_PRESENCE, ECHO_PIN_PRESENCE));
-      break;
 
+      break;
     }
     case (int)Niveau_produit_bas: {
       
