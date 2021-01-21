@@ -7,9 +7,9 @@
 #include <ESPFS.h>
 
 
-#define SAVED_DATAS_SETTINGS_ENDPOINT_PATH "/rest/SettingsDataState"
+#define SETTINGS_DATAS_SETTINGS_ENDPOINT_PATH "/rest/SettingsDataState"
 
-#define SAVED_DATAS_SETTINGS_FILE "/config/SettingsDataState.json"
+#define SETTINGS_DATAS_SETTINGS_FILE "/config/SettingsDataState.json"
 
 class SettingsDataState {
  public:

@@ -21,3 +21,8 @@ export interface LightMqttSettings {
   name: string;
   mqtt_path : string;
 }
+
+export interface PodomaticState{
+  etat:string;
+  mesure_niveau:number;
+}

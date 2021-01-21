@@ -9,6 +9,22 @@ import { AuthenticatedRoute } from '../authentication';
 
 import DemoInformation from './DemoInformation';
 import SavedDataStateRestController from './SavedDataStateRestController';
+import SettingsDataStateRestController from './SettingsDataStateRestController';
+import PodomaticStateWebSocketController from './PodomaticStateWebSocketController';
+
+class RestComponent extends Component {
+
+  render() {
+
+    return (
+      <React.Fragment>
+        <SavedDataStateRestController {...this.props}/>
+        <SettingsDataStateRestController {...this.props}/>
+        </React.Fragment>
+    )
+  }
+
+}
 
 
 class DemoProject extends Component<RouteComponentProps> {
@@ -18,15 +34,18 @@ class DemoProject extends Component<RouteComponentProps> {
   };
 
   render() {
+
     return (
       <MenuAppBar sectionTitle="Gestion Podomatic">
         <Tabs value={this.props.match.url} onChange={this.handleTabChange} variant="fullWidth">
           <Tab value={`/${PROJECT_PATH}/demo/rest`} label="Podomatic" />
           <Tab value={`/${PROJECT_PATH}/demo/information`} label="Information" />
+          <Tab value={`/${PROJECT_PATH}/demo/socket`} label="WebSocket Controller" />
         </Tabs>
         <Switch>
-          <AuthenticatedRoute exact path={`/${PROJECT_PATH}/demo/rest`} component={SavedDataStateRestController} /> 
+          <AuthenticatedRoute exact path={`/${PROJECT_PATH}/demo/rest`} component={RestComponent} /> 
           <AuthenticatedRoute exact path={`/${PROJECT_PATH}/demo/information`} component={DemoInformation} />
+          <AuthenticatedRoute exact path={`/${PROJECT_PATH}/demo/socket`} component={PodomaticStateWebSocketController} />
           <Redirect to={`/${PROJECT_PATH}/demo/rest`} />
         </Switch>
       </MenuAppBar>
