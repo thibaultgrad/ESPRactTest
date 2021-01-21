@@ -8,7 +8,7 @@ import { SectionContent, BlockFormControlLabel } from '../components';
 
 import { PodomaticState } from './types';
 
-export const LIGHT_SETTINGS_WEBSOCKET_URL = WEB_SOCKET_ROOT + "lightState";
+export const LIGHT_SETTINGS_WEBSOCKET_URL = WEB_SOCKET_ROOT + "PodomaticState";
 
 type PodomaticStateWebSocketControllerProps = WebSocketControllerProps<PodomaticState>;
 
@@ -16,7 +16,7 @@ class PodomaticStateWebSocketController extends Component<PodomaticStateWebSocke
 
   render() {
     return (
-      <SectionContent title='WebSocket Controller' titleGutter>
+      <SectionContent title='Etat courant' titleGutter>
         <WebSocketFormLoader
           {...this.props}
           render={props => (
@@ -38,13 +38,11 @@ function PodomaticStateWebSocketControllerForm(props: PodomaticStateWebSocketCon
 
   return (
     <ValidatorForm onSubmit={saveData}>
-      <Box bgcolor="primary.main" color="primary.contrastText" p={2} mt={2} mb={2}>
-        <Typography variant="body1">
-          The switch below controls the LED via the WebSocket. It will automatically update whenever the LED state changes.
-        </Typography>
-      </Box>
       <Typography variant="body1">
     Etat en cours : {data.etat}
+    </Typography>
+    <Typography variant="body1">
+    Niveau produit (mm) : {data.mesure_niveau}
     </Typography>
     </ValidatorForm>
   );

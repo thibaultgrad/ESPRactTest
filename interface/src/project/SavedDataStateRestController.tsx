@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { ValidatorForm } from 'react-material-ui-form-validator';
 
-import { Typography, Box,TextField, FormControlLabel, Switch} from '@material-ui/core';
+import { Typography, Box,TextField, FormControlLabel, Switch, Paper} from '@material-ui/core';
 import SaveIcon from '@material-ui/icons/Save';
 import RefreshIcon from '@material-ui/icons/Refresh';
 
@@ -24,7 +24,7 @@ class SavedDataStateRestController extends Component<SavedDataStateRestControlle
 
   render() {
     return (
-      <SectionContent title='Données podomatic' titleGutter>
+      <SectionContent title='Historique podomatic' titleGutter >
         <RestFormLoader
           {...this.props}
           render={props => (
@@ -49,12 +49,7 @@ function refreshPage() {
 function SavedDataStateRestControllerForm(props: SavedDataStateRestControllerFormProps) {
   const { data, saveData, handleValueChange } = props;
   return (
-    <ValidatorForm onSubmit={saveData}>
-      <Box bgcolor="primary.main" color="primary.contrastText" p={2} mt={2} mb={2}>
-        <Typography variant="body1">
-          Historique
-        </Typography>
-      </Box>
+    <Paper >
       <Typography variant="subtitle2" gutterBottom>
             Temps total de spray en h : {data.temps_total_spray}
       </Typography>
@@ -66,13 +61,6 @@ function SavedDataStateRestControllerForm(props: SavedDataStateRestControllerFor
           Rafraichir
         </FormButton>
       </FormActions>
-      <Box bgcolor="primary.main" color="primary.contrastText" p={2} mt={2} mb={2}>
-        <Typography variant="body1">
-        Reglage des parametres :
-        </Typography>
-      </Box>
-
-
-    </ValidatorForm>
+</Paper>
   );
 }

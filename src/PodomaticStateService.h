@@ -5,10 +5,10 @@
 #include <HttpEndpoint.h>
 #include <WebSocketTxRx.h>
 
-#define LIGHT_SETTINGS_SOCKET_PATH "/ws/lightState"
+#define PODOMATIC_STATE_SETTINGS_SOCKET_PATH "/ws/PodomaticState"
 
 
-#define SAVED_DATAS_SETTINGS_ENDPOINT_PATH "/rest/PodomaticState"
+#define PODOMATIC_STATE_SETTINGS_ENDPOINT_PATH "/rest/PodomaticState"
 
 
 class PodomaticState {

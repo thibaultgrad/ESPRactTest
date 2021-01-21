@@ -5,14 +5,14 @@ PodomaticStateService::PodomaticStateService(AsyncWebServer* server, SecurityMan
                   PodomaticState::update,
                   this,
                   server,
-                  SAVED_DATAS_SETTINGS_ENDPOINT_PATH,
+                  PODOMATIC_STATE_SETTINGS_ENDPOINT_PATH,
                   securityManager,
                   AuthenticationPredicates::IS_AUTHENTICATED),
     _webSocket(PodomaticState::read,
                PodomaticState::update,
                this,
                server,
-               LIGHT_SETTINGS_SOCKET_PATH,
+               PODOMATIC_STATE_SETTINGS_SOCKET_PATH,
                securityManager,
                AuthenticationPredicates::IS_AUTHENTICATED){
   // configure settings service update handler to update LED state
