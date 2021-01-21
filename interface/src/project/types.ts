@@ -5,6 +5,10 @@ export interface LightState {
 export interface SavedDataState {
   temps_total_spray : number;
   nb_total_passage : number;
+
+}
+
+export interface SettingsDataState{
   MS_SPRAY : number;
   MS_RETARD_DEMARRAGE : number;
   MS_Arret : number;
@@ -16,4 +20,9 @@ export interface LightMqttSettings {
   unique_id : string;
   name: string;
   mqtt_path : string;
+}
+
+export interface PodomaticState{
+  etat:string;
+  mesure_niveau:number;
 }
