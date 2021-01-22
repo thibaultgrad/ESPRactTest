@@ -10,6 +10,7 @@ import { restController, RestControllerProps, RestFormLoader, RestFormProps, For
 
 import { SavedDataState } from './types';
 import SettingsDataStateRestControllerForm from'./SettingsDataStateRestController' ;
+import { render } from 'react-dom';
 //import { TextFieldsOutlined } from '@material-ui/icons';
 
 export const LIGHT_SETTINGS_ENDPOINT = ENDPOINT_ROOT + "SavedDataState";
@@ -31,7 +32,9 @@ class SavedDataStateRestController extends Component<SavedDataStateRestControlle
             <SavedDataStateRestControllerForm {...props} />
           )}
         />
-
+        <FormButton startIcon={<RefreshIcon />} variant="contained" color="primary" onClick={this.props.loadData}>
+          Rafraichir
+        </FormButton>
       </SectionContent>
     )
   }
@@ -43,24 +46,19 @@ export default restController(LIGHT_SETTINGS_ENDPOINT, SavedDataStateRestControl
 type SavedDataStateRestControllerFormProps = RestFormProps<SavedDataState>;
 
 function refreshPage() {
-  window.location.reload(false);
+
 }
 
 function SavedDataStateRestControllerForm(props: SavedDataStateRestControllerFormProps) {
   const { data, saveData, handleValueChange } = props;
   return (
-    <Paper >
+    
+      <><Typography variant="subtitle2" gutterBottom>
+      Temps total de spray : {data.temps_total_spray} heures ou {data.temps_total_spray*60} minutes
+    </Typography>
       <Typography variant="subtitle2" gutterBottom>
-            Temps total de spray en h : {data.temps_total_spray}
-      </Typography>
-      <Typography variant="subtitle2" gutterBottom>
-            Nombre total de passages : {data.nb_total_passage}
-      </Typography>
-      <FormActions>
-        <FormButton startIcon={<RefreshIcon />} variant="contained" color="primary" onClick={refreshPage}>
-          Rafraichir
-        </FormButton>
-      </FormActions>
-</Paper>
+        Nombre total de passages: {data.nb_total_passage}
+      </Typography></>
+
   );
 }

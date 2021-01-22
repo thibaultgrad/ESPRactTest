@@ -126,6 +126,8 @@ void setup() {
   esp8266React.begin();
 
   savedDataStateService.begin();
+  
+  settingsDataStateService.begin();
 
   podomaticStateService.begin();
 
