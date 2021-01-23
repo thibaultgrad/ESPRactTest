@@ -40,6 +40,7 @@ unsigned long loop_timer = 0UL;
 
 long t_debut_etat;
 unsigned int duree_etat;
+bool presence=false;
 Etats etat = Attente;
 
 #define pin_moteur_relais1 2
@@ -94,6 +95,8 @@ void UpdatePodoState(){
       [](PodomaticState& state) {
         state.etat = (String)stateStr[(int)etat];
         state.mesure_niveau=10;
+        state.presence=presence;
+        state.duree_etat=duree_etat/1000.0;
         return StateUpdateResult::CHANGED;
       },
       "Jean");
@@ -152,7 +155,7 @@ void loop() {
   // run the framework's loop function
   esp8266React.loop();
 
-  UpdatePodoState();
+  
 
   if (abs(refresh_date - millis()) > 1000) {
     ReadSettings();
@@ -165,8 +168,9 @@ void loop() {
     refresh_date = millis();
   }
 
-  bool presence = digitalRead(pin_detection);
+  presence = digitalRead(pin_detection);
   duree_etat = (unsigned int)abs(millis() - t_debut_etat);
+  UpdatePodoState();
   int val_etat = (int)etat;
   switch (val_etat) {
     case (int)Attente: {

@@ -9,8 +9,8 @@ import { ENDPOINT_ROOT } from '../api';
 import { restController, RestControllerProps, RestFormLoader, RestFormProps, FormActions, FormButton, SectionContent} from '../components';
 
 import { SavedDataState } from './types';
-import SettingsDataStateRestControllerForm from'./SettingsDataStateRestController' ;
-import { render } from 'react-dom';
+import NumberFormat from 'react-number-format';
+
 //import { TextFieldsOutlined } from '@material-ui/icons';
 
 export const LIGHT_SETTINGS_ENDPOINT = ENDPOINT_ROOT + "SavedDataState";
@@ -54,7 +54,7 @@ function SavedDataStateRestControllerForm(props: SavedDataStateRestControllerFor
   return (
     
       <><Typography variant="subtitle2" gutterBottom>
-      Temps total de spray : {data.temps_total_spray} heures ou {data.temps_total_spray*60} minutes
+      Temps total de spray : <NumberFormat value={data.temps_total_spray} decimalSeparator=',' displayType={'text'} decimalScale={2} /> heures ou <NumberFormat value={data.temps_total_spray*60} decimalSeparator=',' displayType={'text'} decimalScale={2} /> minutes
     </Typography>
       <Typography variant="subtitle2" gutterBottom>
         Nombre total de passages: {data.nb_total_passage}

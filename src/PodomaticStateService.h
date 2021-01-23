@@ -15,10 +15,14 @@ class PodomaticState {
  public:
 	String etat;
 	float mesure_niveau;
+  bool presence;
+  float duree_etat;
 
   static void read(PodomaticState& settings, JsonObject& root) {
     root["etat"] = settings.etat;
     root["mesure_niveau"] = settings.mesure_niveau;
+    root["presence"] = settings.presence;
+    root["duree_etat"]=settings.duree_etat;
   }
 
   static StateUpdateResult update(JsonObject& root, PodomaticState& savedState) {
@@ -33,15 +37,15 @@ class PodomaticState {
       newTSpray="mich";
     }
 
-    //String newTSpray = root.containsKey("etat") ? root["etat"] : new String("mich");
+    bool newPres = root.containsKey("presence") ? root["presence"] : 0;
     float newTPassage = root.containsKey("mesure_niveau") ? root["mesure_niveau"]:1;
+    float newDuree = root.containsKey("duree_etat") ? root["duree_etat"]:1;
 
-    if (((savedState.etat) != newTSpray) | ((savedState.mesure_niveau) != newTPassage)  ) {
       savedState.etat = newTSpray;
       savedState.mesure_niveau = newTPassage;
+      savedState.presence=newPres;
+      savedState.duree_etat=newDuree;
       return StateUpdateResult::CHANGED;
-    }
-    return StateUpdateResult::UNCHANGED;
   }
 
 };

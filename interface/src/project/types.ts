@@ -25,4 +25,6 @@ export interface LightMqttSettings {
 export interface PodomaticState{
   etat:string;
   mesure_niveau:number;
+  presence:boolean;
+  duree_etat:number;
 }
