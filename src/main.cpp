@@ -192,7 +192,6 @@ void loop() {
         ajout_temps_spraying();
         if (MS_RETARD_DEMARRAGE <=0 && MS_Arret<=0)
         {
-          ajout_temps_spraying();
           t_debut_etat=millis();
         }
         else{
