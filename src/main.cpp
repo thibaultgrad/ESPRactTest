@@ -187,7 +187,7 @@ void loop() {
     case (int)Spraying: {
       if (duree_etat > MS_SPRAY) {
         ajout_temps_spraying();
-        if (MS_RETARD_DEMARRAGE <= 0 && MS_Arret <= 0 && presence) {
+ if (MS_RETARD_DEMARRAGE <= 0 && MS_Arret <= 0 && presence) {
           ajout_temps_spraying();
           t_debut_etat = millis();
         } else {
