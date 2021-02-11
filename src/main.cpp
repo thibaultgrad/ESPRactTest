@@ -42,7 +42,7 @@ unsigned int duree_etat;
 bool presence = false;
 Etats etat = Attente;
 
-#define pin_moteur_relais1 2
+#define pin_moteur_relais1 13
 #define pin_moteur_relais2 4
 
 #define pin_detection 5
@@ -122,6 +122,10 @@ void ajout_temps_spraying() {
 
 void setup() {
   // start serial and filesystem
+   pinMode(pin_moteur_relais1, OUTPUT);
+
+  digitalWrite(pin_moteur_relais1, LOW); 
+  
   Serial.begin(SERIAL_BAUD_RATE);
 
   // start the framework and demo project
@@ -140,9 +144,6 @@ void setup() {
 
   ReadSavedDatas();
 
-  pinMode(pin_moteur_relais1, OUTPUT);
-
-  digitalWrite(pin_moteur_relais1, 0);
 
   pinMode(pin_detection, INPUT);
 
