@@ -12,8 +12,7 @@ SavedDataStateService savedDataStateService = SavedDataStateService(&server, esp
 
 SettingsDataStateService settingsDataStateService =
     SettingsDataStateService(&server, esp8266React.getSecurityManager());
-PodomaticStateService podomaticStateService =
-    PodomaticStateService(&server, esp8266React.getSecurityManager());
+PodomaticStateService podomaticStateService = PodomaticStateService(&server, esp8266React.getSecurityManager());
 double temps_total_spray;
 unsigned long nb_total_passage;
 unsigned int D_Min_mm;
@@ -40,7 +39,7 @@ unsigned long loop_timer = 0UL;
 
 long t_debut_etat;
 unsigned int duree_etat;
-bool presence=false;
+bool presence = false;
 Etats etat = Attente;
 
 #define pin_moteur_relais1 2
@@ -51,7 +50,7 @@ Etats etat = Attente;
 int nb_spray_non_enregistre;
 #define nb_spray_avt_refresh 10
 
-const char* stateStr[] = {"Attente", "Spraying", "Attente_demarrage","Erreur","Niveau_produit_bas"};
+const char* stateStr[] = {"Attente", "Spraying", "Attente_demarrage", "Erreur", "Niveau_produit_bas"};
 
 void ReadSavedDatas() {
   savedDataStateService.read([](SavedDataState _state) {
@@ -90,20 +89,20 @@ void UpdateSettings() {
       },
       "Jean");
 }
-void UpdatePodoState(){
+void UpdatePodoState() {
   podomaticStateService.update(
       [](PodomaticState& state) {
         state.etat = (String)stateStr[(int)etat];
-        state.mesure_niveau=10;
-        state.presence=presence;
-        state.duree_etat=duree_etat/1000.0;
+        state.mesure_niveau = 10;
+        state.presence = presence;
+        state.duree_etat = duree_etat / 1000.0;
         return StateUpdateResult::CHANGED;
       },
       "Jean");
 }
 void SprayOff() {
   t_debut_etat = millis();
-  digitalWrite(pin_moteur_relais1, HIGH);
+  digitalWrite(pin_moteur_relais1, LOW);
   // delay(2);
   // digitalWrite(pin_moteur_relais2, HIGH);
   etat_spray = 0;
@@ -111,7 +110,7 @@ void SprayOff() {
 void SprayOn() {
   t_debut_etat = millis();
   etat_spray = 1;
-  digitalWrite(pin_moteur_relais1, LOW);
+  digitalWrite(pin_moteur_relais1, HIGH);
   // delay(2);
   // digitalWrite(pin_moteur_relais2, LOW);
 }
@@ -129,7 +128,7 @@ void setup() {
   esp8266React.begin();
 
   savedDataStateService.begin();
-  
+
   settingsDataStateService.begin();
 
   podomaticStateService.begin();
@@ -143,7 +142,7 @@ void setup() {
 
   pinMode(pin_moteur_relais1, OUTPUT);
 
-  digitalWrite(pin_moteur_relais1, 1);
+  digitalWrite(pin_moteur_relais1, 0);
 
   pinMode(pin_detection, INPUT);
 
@@ -154,8 +153,6 @@ void setup() {
 void loop() {
   // run the framework's loop function
   esp8266React.loop();
-
-  
 
   if (abs(refresh_date - millis()) > 1000) {
     ReadSettings();
@@ -190,16 +187,13 @@ void loop() {
     case (int)Spraying: {
       if (duree_etat > MS_SPRAY) {
         ajout_temps_spraying();
-        if (MS_RETARD_DEMARRAGE <=0 && MS_Arret<=0)
-        {
+        if (MS_RETARD_DEMARRAGE <= 0 && MS_Arret <= 0 && presence) {
           ajout_temps_spraying();
-          t_debut_etat=millis();
-        }
-        else{
+          t_debut_etat = millis();
+        } else {
           etat = Attente;
-          SprayOff();   
+          SprayOff();
         }
-
       }
 
       break;
