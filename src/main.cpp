@@ -18,6 +18,8 @@ unsigned long nb_total_passage;
 unsigned int D_Min_mm;
 unsigned int D_Max_mm;
 unsigned long MS_SPRAY;
+unsigned long MS_MAX_SPRAY;
+unsigned long MS_MAX_SPRAY_TIMEOUT;
 unsigned int MS_RETARD_DEMARRAGE;
 unsigned int MS_Arret;
 unsigned int D_Min_level_cuve;
@@ -29,6 +31,7 @@ enum Etats {
   Attente,
   Spraying,
   Attente_demarrage,
+  Attente_spray_long,
   Erreur,
   Niveau_produit_bas,
 };
@@ -39,6 +42,9 @@ unsigned long loop_timer = 0UL;
 
 long t_debut_etat;
 unsigned int duree_etat;
+long t_debut_spraying;
+int nb_ouvertures_vanne = 0;
+unsigned int duree_spraying;
 bool presence = false;
 Etats etat = Attente;
 
@@ -109,8 +115,10 @@ void SprayOff() {
 }
 void SprayOn() {
   t_debut_etat = millis();
+  t_debut_spraying = millis();
   etat_spray = 1;
   digitalWrite(pin_moteur_relais1, HIGH);
+  nb_ouvertures_vanne += 1;
   // delay(2);
   // digitalWrite(pin_moteur_relais2, LOW);
 }
@@ -122,10 +130,10 @@ void ajout_temps_spraying() {
 
 void setup() {
   // start serial and filesystem
-   pinMode(pin_moteur_relais1, OUTPUT);
+  pinMode(pin_moteur_relais1, OUTPUT);
 
-  digitalWrite(pin_moteur_relais1, LOW); 
-  
+  digitalWrite(pin_moteur_relais1, LOW);
+
   Serial.begin(SERIAL_BAUD_RATE);
 
   // start the framework and demo project
@@ -143,7 +151,6 @@ void setup() {
   server.begin();
 
   ReadSavedDatas();
-
 
   pinMode(pin_detection, INPUT);
 
@@ -186,6 +193,13 @@ void loop() {
       break;
     }
     case (int)Spraying: {
+      duree_spraying = (unsigned int)abs(millis() - t_debut_spraying);
+      if (duree_spraying > MS_MAX_SPRAY) {
+        ajout_temps_spraying();
+        t_debut_etat = millis();
+        etat = Attente_spray_long;
+        SprayOff();
+      }
       if (duree_etat > MS_SPRAY) {
         ajout_temps_spraying();
         if (MS_RETARD_DEMARRAGE <= 0 && MS_Arret <= 0 && presence) {
@@ -197,6 +211,12 @@ void loop() {
       }
 
       break;
+    }
+    case (int)Attente_spray_long:{
+      if(duree_etat>MS_MAX_SPRAY_TIMEOUT){
+        t_debut_etat=millis();
+        etat=Attente;
+      }
     }
     case (int)Erreur: {
       break;
