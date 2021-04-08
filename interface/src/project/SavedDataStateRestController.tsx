@@ -58,7 +58,10 @@ function SavedDataStateRestControllerForm(props: SavedDataStateRestControllerFor
     </Typography>
       <Typography variant="subtitle2" gutterBottom>
         Nombre total de passages: {data.nb_total_passage}
-      </Typography></>
-
+      </Typography>
+      <Typography variant="subtitle2" gutterBottom>
+        Nombre total d'ouverture de la vanne': {data.nb_total_ouverture_vanne}
+      </Typography>
+      </>
   );
 }

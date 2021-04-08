@@ -62,11 +62,14 @@ void ReadSavedDatas() {
   savedDataStateService.read([](SavedDataState _state) {
     temps_total_spray = _state.temps_total_spray;
     nb_total_passage = _state.nb_total_passage;
+    nb_ouvertures_vanne=_state.nb_total_ouverture_vanne;
   });
 }
 void ReadSettings() {
   settingsDataStateService.read([](SettingsDataState _state) {
     MS_SPRAY = _state.MS_SPRAY;
+    MS_MAX_SPRAY=_state.MS_SPRAY_MAX;
+    MS_MAX_SPRAY_TIMEOUT=_state.MS_SPRAY_MAX_Timeout;
     MS_RETARD_DEMARRAGE = _state.MS_RETARD_DEMARRAGE;
     MS_Arret = _state.MS_Arret;
     D_Min_level_cuve = _state.D_Min_level_cuve;
@@ -79,6 +82,7 @@ void UpdateSavedDatas() {
       [](SavedDataState& state) {
         state.temps_total_spray = temps_total_spray;
         state.nb_total_passage = nb_total_passage;
+        state.nb_total_ouverture_vanne=nb_ouvertures_vanne;
         return StateUpdateResult::CHANGED;
       },
       "Jean");

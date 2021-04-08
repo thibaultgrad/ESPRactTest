@@ -9,3 +9,4 @@
 .vscode
 build
 node_modules
+lib/framework/WWWData.h

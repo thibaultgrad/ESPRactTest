@@ -5,11 +5,14 @@ export interface LightState {
 export interface SavedDataState {
   temps_total_spray : number;
   nb_total_passage : number;
+  nb_total_ouverture_vanne : number;
 
 }
 
 export interface SettingsDataState{
   MS_SPRAY : number;
+  MS_SPRAY_MAX : number;
+  MS_SPRAY_MAX_Timeout : number;
   MS_RETARD_DEMARRAGE : number;
   MS_Arret : number;
   D_Min_level_cuve : number;

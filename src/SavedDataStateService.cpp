@@ -19,6 +19,7 @@ SavedDataStateService::SavedDataStateService(AsyncWebServer* server,
 void SavedDataStateService::begin() {
       _state.temps_total_spray = 1;
       _state.nb_total_passage = 1;
+      _state.nb_total_ouverture_vanne=1;
   _fsPersistence.readFromFS();
   onConfigUpdated();
 }

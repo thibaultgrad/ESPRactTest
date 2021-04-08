@@ -18,19 +18,23 @@ class SavedDataState {
  public:
 	double temps_total_spray;
 	unsigned long nb_total_passage;
+  unsigned long nb_total_ouverture_vanne;
 
   static void read(SavedDataState& settings, JsonObject& root) {
     root["temps_total_spray"] = settings.temps_total_spray;
     root["nb_total_passage"] = settings.nb_total_passage;
+    root["nb_total_ouverture_vanne"] = settings.nb_total_ouverture_vanne;
   }
 
   static StateUpdateResult update(JsonObject& root, SavedDataState& savedState) {
     double newTSpray = root.containsKey("temps_total_spray") ? (double)root["temps_total_spray"]:1;
     unsigned long newTPassage = root.containsKey("nb_total_passage") ? root["nb_total_passage"]:1;
+    unsigned long newTOuverture = root.containsKey("nb_total_ouverture_vanne") ? root["nb_total_ouverture_vanne"]:1;
 
-    if (((savedState.temps_total_spray) != newTSpray) | ((savedState.nb_total_passage) != newTPassage)  ) {
+    if (((savedState.temps_total_spray) != newTSpray) | ((savedState.nb_total_passage) != newTPassage)| ((savedState.nb_total_ouverture_vanne) != newTOuverture)  ) {
       savedState.temps_total_spray = newTSpray;
       savedState.nb_total_passage = newTPassage;
+      savedState.nb_total_ouverture_vanne=newTOuverture;
       return StateUpdateResult::CHANGED;
     }
     return StateUpdateResult::UNCHANGED;
