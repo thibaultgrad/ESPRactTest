@@ -56,7 +56,7 @@ Etats etat = Attente;
 int nb_spray_non_enregistre;
 #define nb_spray_avt_refresh 10
 
-const char* stateStr[] = {"Attente", "Spraying", "Attente_demarrage", "Erreur", "Niveau_produit_bas"};
+const char* stateStr[] = {"Attente", "Spraying", "Attente demarrage", "Time Out Spray", "Erreur", "Niveau produit bas"};
 
 void ReadSavedDatas() {
   savedDataStateService.read([](SavedDataState _state) {
@@ -170,6 +170,7 @@ void loop() {
     ReadSettings();
     if (Reset_counters == true) {
       nb_total_passage = 0;
+      nb_ouvertures_vanne=0;
       temps_total_spray = 0;
       Reset_counters = false;
       UpdateSavedDatas();
