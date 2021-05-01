@@ -11,8 +11,8 @@ export interface SavedDataState {
 
 export interface SettingsDataState{
   MS_SPRAY : number;
-  MS_SPRAY_MAX : number;
-  MS_SPRAY_MAX_Timeout : number;
+  MS_Ratio : number;
+  MaxRatio : number;
   MS_RETARD_DEMARRAGE : number;
   MS_Arret : number;
   D_Min_level_cuve : number;
@@ -27,7 +27,7 @@ export interface LightMqttSettings {
 
 export interface PodomaticState{
   etat:string;
-  mesure_niveau:number;
+  currentRatio:number;
   presence:boolean;
   duree_etat:number;
 }

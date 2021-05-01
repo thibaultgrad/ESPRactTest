@@ -21,7 +21,7 @@ PodomaticStateService::PodomaticStateService(AsyncWebServer* server, SecurityMan
 
 void PodomaticStateService::begin() {
   _state.etat = "michel";
-  _state.mesure_niveau = 1;
+  _state.currentRatio = 1;
   _state.presence=0;
   _state.duree_etat=0;
 

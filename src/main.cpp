@@ -17,12 +17,12 @@ double temps_total_spray;
 unsigned long nb_total_passage;
 unsigned int D_Min_mm;
 unsigned int D_Max_mm;
-unsigned long MS_SPRAY;
-unsigned long MS_MAX_SPRAY;
-unsigned long MS_MAX_SPRAY_TIMEOUT;
-unsigned int MS_RETARD_DEMARRAGE;
-unsigned int MS_Arret;
-unsigned int D_Min_level_cuve;
+float MS_SPRAY;
+float MS_Ratio;
+float MaxRatio;
+float MS_RETARD_DEMARRAGE;
+float MS_Arret;
+float D_Min_level_cuve;
 bool Reset_counters;
 
 unsigned long refresh_date;
@@ -31,7 +31,7 @@ enum Etats {
   Attente,
   Spraying,
   Attente_demarrage,
-  Attente_spray_long,
+  Attente_Max_Ratio,
   Erreur,
   Niveau_produit_bas,
 };
@@ -42,11 +42,17 @@ unsigned long loop_timer = 0UL;
 
 long t_debut_etat;
 unsigned int duree_etat;
-long t_debut_spraying;
 int nb_ouvertures_vanne = 0;
-unsigned int duree_spraying;
 bool presence = false;
 Etats etat = Attente;
+
+#define Onechantillons 4000
+float tailleEch = Onechantillons;
+bool OnTimes[Onechantillons];
+int i;
+float currentRatio = 0;
+float refreshrate;
+unsigned long lastratiotime;
 
 #define pin_moteur_relais1 13
 #define pin_moteur_relais2 4
@@ -56,24 +62,25 @@ Etats etat = Attente;
 int nb_spray_non_enregistre;
 #define nb_spray_avt_refresh 10
 
-const char* stateStr[] = {"Attente", "Spraying", "Attente demarrage", "Time Out Spray", "Erreur", "Niveau produit bas"};
+const char* stateStr[] = {"Attente", "Pulverisation", "Attente demarrage", "Ratio trop important", "Erreur", "Niveau produit bas"};
 
 void ReadSavedDatas() {
   savedDataStateService.read([](SavedDataState _state) {
     temps_total_spray = _state.temps_total_spray;
     nb_total_passage = _state.nb_total_passage;
-    nb_ouvertures_vanne=_state.nb_total_ouverture_vanne;
+    nb_ouvertures_vanne = _state.nb_total_ouverture_vanne;
   });
 }
 void ReadSettings() {
   settingsDataStateService.read([](SettingsDataState _state) {
     MS_SPRAY = _state.MS_SPRAY;
-    MS_MAX_SPRAY=_state.MS_SPRAY_MAX;
-    MS_MAX_SPRAY_TIMEOUT=_state.MS_SPRAY_MAX_Timeout;
+    MS_Ratio = _state.MS_Ratio;
+    MaxRatio = constrain(_state.MaxRatio/100,0,1);
     MS_RETARD_DEMARRAGE = _state.MS_RETARD_DEMARRAGE;
     MS_Arret = _state.MS_Arret;
     D_Min_level_cuve = _state.D_Min_level_cuve;
     Reset_counters = _state.Reset_counters;
+    refreshrate = MS_Ratio / tailleEch;
   });
 }
 
@@ -82,7 +89,7 @@ void UpdateSavedDatas() {
       [](SavedDataState& state) {
         state.temps_total_spray = temps_total_spray;
         state.nb_total_passage = nb_total_passage;
-        state.nb_total_ouverture_vanne=nb_ouvertures_vanne;
+        state.nb_total_ouverture_vanne = nb_ouvertures_vanne;
         return StateUpdateResult::CHANGED;
       },
       "Jean");
@@ -103,7 +110,7 @@ void UpdatePodoState() {
   podomaticStateService.update(
       [](PodomaticState& state) {
         state.etat = (String)stateStr[(int)etat];
-        state.mesure_niveau = 10;
+        state.currentRatio = currentRatio;
         state.presence = presence;
         state.duree_etat = duree_etat / 1000.0;
         return StateUpdateResult::CHANGED;
@@ -119,7 +126,6 @@ void SprayOff() {
 }
 void SprayOn() {
   t_debut_etat = millis();
-  t_debut_spraying = millis();
   etat_spray = 1;
   digitalWrite(pin_moteur_relais1, HIGH);
   nb_ouvertures_vanne += 1;
@@ -133,6 +139,10 @@ void ajout_temps_spraying() {
 }
 
 void setup() {
+  for (i = 0; i <= 999; i++) {
+    OnTimes[i] = 0;
+  }
+  i = 0;
   // start serial and filesystem
   pinMode(pin_moteur_relais1, OUTPUT);
 
@@ -160,9 +170,31 @@ void setup() {
 
   t_debut_etat = millis();
   etat_spray = 0;
+  lastratiotime = millis();
+  loop_timer = millis();
+  refreshrate=0;
 }
 
 void loop() {
+  
+
+  if (abs(lastratiotime - millis()) > refreshrate) {
+    if (i <= tailleEch-1) {
+      OnTimes[i] = etat_spray;
+      currentRatio += etat_spray ? 0.00025f : 0.0f;
+      i += 1;
+    } else {
+      currentRatio += etat_spray ? 0.00025f : 0.0f ;
+      currentRatio -= OnTimes[0] ? 0.00025f : 0.0f;
+      for (i = 1; i <= Onechantillons-1; i++) {
+        OnTimes[i - 1] = OnTimes[i];
+      }
+      i=tailleEch;
+      OnTimes[(int)tailleEch-1]=etat_spray;
+    }
+    lastratiotime = millis();
+  }
+
   // run the framework's loop function
   esp8266React.loop();
 
@@ -170,7 +202,7 @@ void loop() {
     ReadSettings();
     if (Reset_counters == true) {
       nb_total_passage = 0;
-      nb_ouvertures_vanne=0;
+      nb_ouvertures_vanne = 0;
       temps_total_spray = 0;
       Reset_counters = false;
       UpdateSavedDatas();
@@ -198,14 +230,13 @@ void loop() {
       break;
     }
     case (int)Spraying: {
-      duree_spraying = (unsigned int)abs(millis() - t_debut_spraying);
-      if (duree_spraying > MS_MAX_SPRAY) {
+      if (currentRatio > MaxRatio) {
         ajout_temps_spraying();
         t_debut_etat = millis();
-        etat = Attente_spray_long;
+        etat = Attente_Max_Ratio;
         SprayOff();
       }
-      if (duree_etat > MS_SPRAY) {
+      else if (duree_etat > MS_SPRAY) {
         ajout_temps_spraying();
         if (MS_RETARD_DEMARRAGE <= 0 && MS_Arret <= 0 && presence) {
           t_debut_etat = millis();
@@ -217,10 +248,10 @@ void loop() {
 
       break;
     }
-    case (int)Attente_spray_long:{
-      if(duree_etat>MS_MAX_SPRAY_TIMEOUT){
-        t_debut_etat=millis();
-        etat=Attente;
+    case (int)Attente_Max_Ratio: {
+      if (currentRatio < MaxRatio) {
+        t_debut_etat = millis();
+        etat = Attente;
       }
     }
     case (int)Erreur: {
@@ -233,4 +264,5 @@ void loop() {
       break;
     }
   }
+
 }

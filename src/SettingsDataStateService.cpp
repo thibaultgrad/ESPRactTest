@@ -15,8 +15,8 @@ SettingsDataStateService::SettingsDataStateService(AsyncWebServer* server, Secur
 
 void SettingsDataStateService::begin() {
   _state.MS_SPRAY = 1500;
-  _state.MS_SPRAY_MAX = 4000;
-  _state.MS_SPRAY_MAX_Timeout = 1500;
+  _state.MS_Ratio = 4000;
+  _state.MaxRatio = 1500;
   _state.MS_RETARD_DEMARRAGE = 0;
   _state.MS_Arret = 0;
   _state.D_Min_level_cuve = 1;

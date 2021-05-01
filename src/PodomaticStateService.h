@@ -14,13 +14,13 @@
 class PodomaticState {
  public:
 	String etat;
-	float mesure_niveau;
+	float currentRatio;
   bool presence;
   float duree_etat;
 
   static void read(PodomaticState& settings, JsonObject& root) {
     root["etat"] = settings.etat;
-    root["mesure_niveau"] = settings.mesure_niveau;
+    root["currentRatio"] = settings.currentRatio;
     root["presence"] = settings.presence;
     root["duree_etat"]=settings.duree_etat;
   }
@@ -38,11 +38,11 @@ class PodomaticState {
     }
 
     bool newPres = root.containsKey("presence") ? root["presence"] : 0;
-    float newTPassage = root.containsKey("mesure_niveau") ? root["mesure_niveau"]:1;
+    float newTPassage = root.containsKey("currentRatio") ? root["currentRatio"]:1;
     float newDuree = root.containsKey("duree_etat") ? root["duree_etat"]:1;
 
       savedState.etat = newTSpray;
-      savedState.mesure_niveau = newTPassage;
+      savedState.currentRatio = newTPassage;
       savedState.presence=newPres;
       savedState.duree_etat=newDuree;
       return StateUpdateResult::CHANGED;

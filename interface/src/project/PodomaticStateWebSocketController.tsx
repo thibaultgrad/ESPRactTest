@@ -44,11 +44,11 @@ function PodomaticStateWebSocketControllerForm(props: PodomaticStateWebSocketCon
     Etat en cours : {data.etat} (<NumberFormat value={data.duree_etat} displayType={'text'} decimalSeparator=',' decimalScale={1} /> s)
     </Typography>
     <Typography variant="body1">
-    Niveau produit : {data.mesure_niveau} mm
+    Ratio de pulverisation : <NumberFormat value={data.currentRatio*100} displayType={'text'} decimalScale={0}/> %
     </Typography>
     <Typography variant="body1"> Cellule {data.presence ? "barrée":"ouverte"} <Checkbox checked={data.presence} readOnly/></Typography>
     <Typography variant="body1">
-    Temps passé dans cet état : <NumberFormat value={data.duree_etat} displayType={'text'} decimalSeparator=',' decimalScale={1} /> s
+    Temps dans cet état : <NumberFormat value={data.duree_etat} displayType={'text'} decimalSeparator=',' decimalScale={2} /> s
     </Typography>
     </ValidatorForm>
   );

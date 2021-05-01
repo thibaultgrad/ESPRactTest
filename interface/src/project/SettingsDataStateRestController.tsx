@@ -53,11 +53,11 @@ function SettingsDataStateRestControllerForm(props: SettingsDataStateRestControl
         </Typography>
       </Box>
       <TextField id="standard-basic" label="Temps de spray(ms)" onChange={handleValueChange('MS_SPRAY')} value={data.MS_SPRAY} color="secondary" />
-      <TextField id="standard-basic" label="Temps de spray continu max(ms)" onChange={handleValueChange('MS_SPRAY_MAX')} value={data.MS_SPRAY_MAX} color="secondary" />
-      <TextField id="standard-basic" label="Temps d'arret apres arrêt continu(ms)" onChange={handleValueChange('MS_SPRAY_MAX_Timeout')} value={data.MS_SPRAY_MAX_Timeout} color="secondary" />
+      <TextField id="standard-basic" label="Periode de prise en compte ratio (ms)" onChange={handleValueChange('MS_Ratio')} value={data.MS_Ratio} color="secondary" />
+      <TextField id="standard-basic" label="Ratio de pulverisation max (%)" onChange={handleValueChange('MaxRatio')} value={data.MaxRatio} color="secondary" />
       <TextField id="standard-basic" label="Retard demarrage(ms)" onChange={handleValueChange('MS_RETARD_DEMARRAGE')} value={data.MS_RETARD_DEMARRAGE} color="secondary" />
-      <TextField id="standard-basic" label="Temps arret (ms)" onChange={handleValueChange('MS_Arret')} value={data.MS_Arret} color="secondary" />
-      <TextField id="standard-basic" label="Level min cuve(mm)" onChange={handleValueChange('D_Min_level_cuve')} value={data.D_Min_level_cuve} color="secondary" />
+      <TextField id="standard-basic" label="Temps minimum d'arret (ms)" onChange={handleValueChange('MS_Arret')} value={data.MS_Arret} color="secondary" />
+      <TextField id="standard-basic" label="Niveau mini cuve(mm)" onChange={handleValueChange('D_Min_level_cuve')} value={data.D_Min_level_cuve} color="secondary" />
       <FormActions>
         <FormButton startIcon={<SaveIcon />} variant="contained" color="primary" type="submit">
           Save
