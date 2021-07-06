@@ -25,6 +25,7 @@ float MS_Arret;
 float D_Min_level_cuve;
 bool Reset_counters;
 
+
 unsigned long refresh_date;
 
 enum Etats {
@@ -54,10 +55,10 @@ float currentRatio = 0;
 float refreshrate;
 unsigned long lastratiotime;
 
-#define pin_moteur_relais1 13
-#define pin_moteur_relais2 4
+#define pin_relais_Spray 14
+//#define pin_moteur_relais2 4
 
-#define pin_detection 5
+#define pin_detection 16
 
 int nb_spray_non_enregistre;
 #define nb_spray_avt_refresh 10
@@ -119,7 +120,7 @@ void UpdatePodoState() {
 }
 void SprayOff() {
   t_debut_etat = millis();
-  digitalWrite(pin_moteur_relais1, LOW);
+  digitalWrite(pin_relais_Spray, LOW);
   // delay(2);
   // digitalWrite(pin_moteur_relais2, HIGH);
   etat_spray = 0;
@@ -127,7 +128,7 @@ void SprayOff() {
 void SprayOn() {
   t_debut_etat = millis();
   etat_spray = 1;
-  digitalWrite(pin_moteur_relais1, HIGH);
+  digitalWrite(pin_relais_Spray, HIGH);
   nb_ouvertures_vanne += 1;
   // delay(2);
   // digitalWrite(pin_moteur_relais2, LOW);
@@ -144,9 +145,9 @@ void setup() {
   }
   i = 0;
   // start serial and filesystem
-  pinMode(pin_moteur_relais1, OUTPUT);
+  pinMode(pin_relais_Spray, OUTPUT);
 
-  digitalWrite(pin_moteur_relais1, LOW);
+  digitalWrite(pin_relais_Spray, LOW);
 
   Serial.begin(SERIAL_BAUD_RATE);
 
@@ -178,7 +179,7 @@ void setup() {
 void loop() {
   
 
-  if (abs(lastratiotime - millis()) > refreshrate) {
+  if (abs((long)(lastratiotime - millis())) > refreshrate) {
     if (i <= tailleEch-1) {
       OnTimes[i] = etat_spray;
       currentRatio += etat_spray ? 0.00025f : 0.0f;
@@ -198,7 +199,7 @@ void loop() {
   // run the framework's loop function
   esp8266React.loop();
 
-  if (abs(refresh_date - millis()) > 1000) {
+  if (abs((long)(refresh_date - millis())) > 1000) {
     ReadSettings();
     if (Reset_counters == true) {
       nb_total_passage = 0;
@@ -211,7 +212,7 @@ void loop() {
   }
 
   presence = digitalRead(pin_detection);
-  duree_etat = (unsigned int)abs(millis() - t_debut_etat);
+  duree_etat = (unsigned int)abs((long)(millis() - t_debut_etat));
   UpdatePodoState();
   int val_etat = (int)etat;
   switch (val_etat) {
