@@ -25,7 +25,6 @@ float MS_Arret;
 float D_Min_level_cuve;
 bool Reset_counters;
 
-
 unsigned long refresh_date;
 
 enum Etats {
@@ -63,7 +62,8 @@ unsigned long lastratiotime;
 int nb_spray_non_enregistre;
 #define nb_spray_avt_refresh 10
 
-const char* stateStr[] = {"Attente", "Pulverisation", "Attente demarrage", "Ratio trop important", "Erreur", "Niveau produit bas"};
+const char* stateStr[] =
+    {"Attente", "Pulverisation", "Attente demarrage", "Ratio trop important", "Erreur", "Niveau produit bas"};
 
 void ReadSavedDatas() {
   savedDataStateService.read([](SavedDataState _state) {
@@ -76,7 +76,7 @@ void ReadSettings() {
   settingsDataStateService.read([](SettingsDataState _state) {
     MS_SPRAY = _state.MS_SPRAY;
     MS_Ratio = _state.MS_Ratio;
-    MaxRatio = constrain(_state.MaxRatio/100,0,1);
+    MaxRatio = constrain(_state.MaxRatio / 100, 0, 1);
     MS_RETARD_DEMARRAGE = _state.MS_RETARD_DEMARRAGE;
     MS_Arret = _state.MS_Arret;
     D_Min_level_cuve = _state.D_Min_level_cuve;
@@ -173,25 +173,18 @@ void setup() {
   etat_spray = 0;
   lastratiotime = millis();
   loop_timer = millis();
-  refreshrate=0;
+  refreshrate = 0;
 }
 
 void loop() {
-  
-
   if (abs((long)(lastratiotime - millis())) > refreshrate) {
-    if (i <= tailleEch-1) {
-      OnTimes[i] = etat_spray;
-      currentRatio += etat_spray ? 0.00025f : 0.0f;
+    OnTimes[i] = etat_spray;
+    currentRatio += etat_spray ? 0.00025f : 0.0f;
+    currentRatio -= OnTimes[i <= tailleEch - 2 ? i + 1 : 0] ? 0.00025f : 0.0f;
+    if (i <= tailleEch - 1) {
       i += 1;
     } else {
-      currentRatio += etat_spray ? 0.00025f : 0.0f ;
-      currentRatio -= OnTimes[0] ? 0.00025f : 0.0f;
-      for (i = 1; i <= Onechantillons-1; i++) {
-        OnTimes[i - 1] = OnTimes[i];
-      }
-      i=tailleEch;
-      OnTimes[(int)tailleEch-1]=etat_spray;
+      i = 0;
     }
     lastratiotime = millis();
   }
@@ -236,8 +229,7 @@ void loop() {
         t_debut_etat = millis();
         etat = Attente_Max_Ratio;
         SprayOff();
-      }
-      else if (duree_etat > MS_SPRAY) {
+      } else if (duree_etat > MS_SPRAY) {
         ajout_temps_spraying();
         if (MS_RETARD_DEMARRAGE <= 0 && MS_Arret <= 0 && presence) {
           t_debut_etat = millis();
@@ -265,5 +257,4 @@ void loop() {
       break;
     }
   }
-
 }
